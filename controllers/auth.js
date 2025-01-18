@@ -5,7 +5,11 @@ const { BadRequestError, UnauthenticatedError } = require("../errors")
 
 const register = async(req, res) => { 
 
-    const user = await User.create({...req.body})     
+    const user = await User.create({...req.body})   
+    console.log(req.user);
+    console.log(user);
+
+      
     const token = user.createJWT()
 
     res.status(StatusCodes.CREATED).json({ user : {name : user.name} , token}) 
@@ -19,7 +23,7 @@ const login = async(req, res) => {
     }
 
     const user = await User.findOne({email})
-    // console.log(user);
+    console.log(user);
 
     if(!user){
         throw new UnauthenticatedError('Invilid Email , Please Provide Valid Email!')
