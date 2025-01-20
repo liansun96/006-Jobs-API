@@ -9,45 +9,43 @@ const getAllJobs = async(req, res) => {
 }
 
 const getJob = async(req, res) => {
-    const{ user : {userId} ,  params : {id : jobId} } = req
-    console.log(jobId) 
-    
-    const job = await Job.findOne({_id : jobId  , createdBy : userId})
+    const {user : {userId} , params : {id : jobId}} = req
+
+    const job = await Job.findOne({_id : jobId , createdBy : userId})    
     if(!job){
-        throw new notFoundError(`No job with ${jobId}`)
+        throw new notFoundError(`No job with id : ${jobId}`)
     }
-    res.status(200).json({job})
+
+    res.status(StatusCodes.OK).json({job})
 }
 
-const createJob= async(req, res) => {
-    console.log(req)
+const createJob= async(req, res) => {    
     req.body.createdBy = req.user.userId
-    // console.log(req.user.userId);    
+    
     const job = await Job.create(req.body)
     res.status(StatusCodes.CREATED).json({job})
 }
 
 const updateJob = async(req, res) => {
-    const {body : {company , position} , params : {id : jobId}} = req
-    console.log(company , position);
-    const job = await Job.findByIdAndUpdate({_id : jobId} ,req.body , {new : true} )
+    const {body : {company , position } , params : {id : jobId}} = req
+
+    const job = await Job.findByIdAndUpdate({_id : jobId } , req.body , {new : true})
     if(!job){
-        throw new notFoundError(`No job wiht id ${jobId}`)
+        throw new notFoundError(`No job with id : ${jobId}`)
     }
+
     res.status(StatusCodes.OK).json({job})
 }
 
 const deleteJob = async(req, res) => {
-    const {user : {userId} , params : {id : jobId}} = req
+   const {user : {userId} , params : {id : jobId}} = req
 
-    const job = await Job.findByIdAndDelete({_id : jobId})
+   const job = await Job.findByIdAndDelete({_id : jobId , createdBy : userId})
+   if(!job){
+    throw new notFoundError(`No job with id : ${jobId}`)
+   }
 
-    if(!job){
-        throw new notFoundError(`No job with id : ${jobId}`)
-    }
-    console.log(job);
-    
-    res.status(StatusCodes.OK).json({job})
+   res.status(StatusCodes.OK).json({job})
 }
 
 module.exports = {getAllJobs , createJob , getJob , updateJob , deleteJob}
