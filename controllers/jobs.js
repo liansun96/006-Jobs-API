@@ -4,7 +4,7 @@ const { CustomAIPError } = require("../errors")
 const notFoundError = require("../errors/not-found")
 
 const getAllJobs = async(req, res) => {
-    const jobs = await Job.find({createdBy : req.user.userId}).sort('createdAt')
+    const jobs = await Job.find({createdBy : req.user.userId}).sort('-createdAt')
     res.status(StatusCodes.OK).json({nbHits : jobs.length , jobs})
 }
 
@@ -38,14 +38,14 @@ const updateJob = async(req, res) => {
 }
 
 const deleteJob = async(req, res) => {
-   const {user : {userId} , params : {id : jobId}} = req
+  const {user : {userId} , params : {id : jobId}} = req
 
-   const job = await Job.findByIdAndDelete({_id : jobId , createdBy : userId})
-   if(!job){
+  const job = await Job.findByIdAndDelete({_id : jobId})
+  if(!job){
     throw new notFoundError(`No job with id : ${jobId}`)
-   }
+  }
 
-   res.status(StatusCodes.OK).json({job})
+  res.status(StatusCodes.OK).json({job})
 }
 
 module.exports = {getAllJobs , createJob , getJob , updateJob , deleteJob}
